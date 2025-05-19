@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 export default function TradeHistoryTable({ entityId, entityType }) {
   const [tradeHistory, setTradeHistory] = useState([]);
@@ -11,35 +11,54 @@ export default function TradeHistoryTable({ entityId, entityType }) {
   const [success, setSuccess] = useState('');
 
   // Fetch trade history for the specific entity (trader or user)
-  const fetchTradeHistory = async () => {
-    if (!entityId) return;
+  const fetchTradeHistory = useCallback(async () => {
+    if (!entityId) {
+      console.log('No entityId provided, skipping fetch');
+      return;
+    }
     
     setLoading(true);
+    setError('');
     try {
       // Construct query parameter based on entity type
       const queryParam = entityType === 'trader' ? 'traderId' : 'userId';
+      console.log(`Fetching trade history for ${entityType} with ID ${entityId}`);
       const historyResponse = await fetch(`/api/tradeHistory?${queryParam}=${entityId}`);
       const historyData = await historyResponse.json();
       
+      console.log('Trade history API response:', historyData);
+      
       if (historyData.success) {
         setTradeHistory(historyData.data);
+        console.log('Trade history data set:', historyData.data);
       } else {
         setError(historyData.message || 'Failed to load trade history');
+        console.error('API error:', historyData.message);
       }
     } catch (error) {
       console.error(`Error fetching trade history for ${entityType}:`, error);
-      setError('Failed to load trade history');
+      setError('Failed to load trade history: ' + error.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [entityId, entityType]);
 
+  // Use a ref to track if we've already fetched data for this entityId
+  const fetchedRef = useRef(false);
+  const prevEntityIdRef = useRef(null);
+  
   // Load trade history when entityId changes
   useEffect(() => {
-    if (entityId) {
+    // Only fetch if entityId exists and either:
+    // 1. We haven't fetched yet, or
+    // 2. The entityId has changed
+    if (entityId && (!fetchedRef.current || prevEntityIdRef.current !== entityId)) {
+      console.log('Fetching trade history for new entityId:', entityId);
       fetchTradeHistory();
+      fetchedRef.current = true;
+      prevEntityIdRef.current = entityId;
     }
-  }, [entityId, fetchTradeHistory]);
+  }, [entityId]);
 
   // Format date for display
   const formatDate = (dateString) => {

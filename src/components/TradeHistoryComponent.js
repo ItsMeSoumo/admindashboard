@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function TradeHistoryComponent() {
@@ -22,26 +22,34 @@ export default function TradeHistoryComponent() {
   const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
   // Fetch all trade history
-  const fetchTradeData = async () => {
+  const fetchTradeData = useCallback(async () => {
     setLoading(true);
+    setError('');
     try {
       // Fetch all trade history
+      console.log('Fetching trade history data...');
       const historyResponse = await fetch('/api/tradeHistory');
       const historyData = await historyResponse.json();
       
+      console.log('Trade history API response:', historyData);
+      
       if (historyData.success) {
         setTradeHistory(historyData.data);
+        console.log('Trade history data set:', historyData.data);
+      } else {
+        setError(historyData.message || 'Failed to load trade history');
+        console.error('API error:', historyData.message);
       }
     } catch (error) {
       console.error('Error fetching trade data:', error);
-      setError('Failed to load trade data');
+      setError('Failed to load trade data: ' + error.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Fetch traders for the dropdown
-  const fetchTraders = async () => {
+  const fetchTraders = useCallback(async () => {
     try {
       const response = await fetch('/api/trader');
       const data = await response.json();
@@ -52,10 +60,10 @@ export default function TradeHistoryComponent() {
     } catch (error) {
       console.error('Error fetching traders:', error);
     }
-  };
+  }, []);
 
   // Fetch users for reference
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await fetch('/api/user');
       const data = await response.json();
@@ -66,13 +74,33 @@ export default function TradeHistoryComponent() {
     } catch (error) {
       console.error('Error fetching users:', error);
     }
-  };
+  }, []);
 
+  // Use a ref to track if we've already loaded data
+  const dataLoadedRef = useRef(false);
+  
   // Load trade data when component mounts
   useEffect(() => {
-    fetchTradeData();
-    fetchTraders();
-    fetchUsers();
+    // Only load data once
+    if (!dataLoadedRef.current) {
+      const loadData = async () => {
+        setLoading(true);
+        try {
+          console.log('Loading trade history data...');
+          await fetchTradeData();
+          await fetchTraders();
+          await fetchUsers();
+          dataLoadedRef.current = true;
+        } catch (error) {
+          console.error('Error loading data:', error);
+          setError('Failed to load data');
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      loadData();
+    }
   }, []);
 
   // Handle form input changes

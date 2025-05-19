@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TradeHistoryTable from '../../../components/TradeHistoryTable';
 
 export default function UserDetailPage({ params }) {
+  // Store the ID in a state variable to avoid the params warning
+  const [userId] = useState(params?.id);
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,11 +31,16 @@ export default function UserDetailPage({ params }) {
     confirmPassword: ''
   });
 
+  // Use a ref to track if we've already fetched data for this user
+  const fetchedRef = useRef(false);
+  const prevUserIdRef = useRef(null);
+  
   useEffect(() => {
     const fetchUser = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/user/${params.id}`);
+        console.log('Fetching user details for ID:', userId);
+        const response = await fetch(`/api/user/${userId}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
@@ -43,6 +50,7 @@ export default function UserDetailPage({ params }) {
         
         if (data.success) {
           setUser(data.data);
+          console.log('User data loaded successfully');
         } else {
           throw new Error(data.message || 'Failed to fetch user data');
         }
@@ -54,10 +62,12 @@ export default function UserDetailPage({ params }) {
       }
     };
     
-    if (params.id) {
+    // Only fetch once when component mounts
+    if (userId && !fetchedRef.current) {
       fetchUser();
+      fetchedRef.current = true;
     }
-  }, [params.id]);
+  }, []);
 
   // Calculate profit/loss percentage
   const calculatePercentage = () => {
@@ -449,7 +459,7 @@ export default function UserDetailPage({ params }) {
                 </svg>
                 Trade History
               </h2>
-              <TradeHistoryTable entityId={params.id} entityType="user" />
+              <TradeHistoryTable entityId={userId} entityType="user" />
             </div>
             
             <div className="mt-8 flex justify-between">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { use } from 'react';
@@ -40,40 +40,45 @@ export default function TraderDetailPage({ params }) {
     confirmPassword: ''
   });
 
+  // Use a ref to track if we've already fetched data for this trader
+  const fetchedRef = useRef(false);
+  const prevTraderIdRef = useRef(null);
+  
   useEffect(() => {
     const fetchTrader = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
+        console.log('Fetching trader details for ID:', traderId);
+        // Fetch the trader details
         const response = await fetch(`/api/trader/${traderId}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch trader data');
-        }
-        
         const data = await response.json();
         
         if (data.success) {
           setTrader(data.data);
+          console.log('Trader data loaded successfully');
           
-          // If trader has assigned users, fetch user data to display names
-          if (data.data.assignedUsers && data.data.assignedUsers.length > 0) {
-            fetchUsers();
-          }
+          // Fetch users to get the user name for this trader
+          await fetchUsers();
         } else {
-          throw new Error(data.message || 'Failed to fetch trader data');
+          setError(data.message || 'Failed to load trader details');
         }
-      } catch (err) {
-        console.error('Error fetching trader:', err);
-        setError(err.message);
+      } catch (error) {
+        console.error('Error fetching trader details:', error);
+        setError('Failed to load trader details');
       } finally {
         setLoading(false);
       }
     };
     
-    if (traderId) {
+    // Only fetch if traderId exists and either:
+    // 1. We haven't fetched yet, or
+    // 2. The traderId has changed
+    if (traderId && (!fetchedRef.current || prevTraderIdRef.current !== traderId)) {
       fetchTrader();
+      fetchedRef.current = true;
+      prevTraderIdRef.current = traderId;
     }
-  }, [traderId, fetchUsers]);
+  }, [traderId]);
 
   // Calculate success rate percentage
   const calculateSuccessRate = () => {
