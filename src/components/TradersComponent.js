@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
+import Image from 'next/image';
 import TradeHistoryTable from './TradeHistoryTable';
 
 // Custom CSS for the component
@@ -286,7 +287,13 @@ export default function TradersComponent({
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10 trader-avatar">
                             {trader.profileImage ? (
-                              <img className="h-10 w-10 rounded-full object-cover border-2 border-blue-100" src={trader.profileImage} alt={trader.name} />
+                              <Image 
+                                className="h-10 w-10 rounded-full object-cover border-2 border-blue-100" 
+                                src={trader.profileImage} 
+                                alt={trader.name}
+                                width={40}
+                                height={40}
+                              />
                             ) : (
                               <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-sm">
                                 <span className="text-white font-medium text-lg">{trader.name.charAt(0).toUpperCase()}</span>

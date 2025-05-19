@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -15,7 +15,8 @@ import DashboardComponent from "../components/DashboardComponent";
 import TradeHistoryComponent from "../components/TradeHistoryComponent";
 
 
-export default function Home() {
+// Client component that uses useSearchParams
+function HomeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -1093,5 +1094,14 @@ export default function Home() {
         )}
       </div>
     </main>
+  );
+}
+
+// Wrap the client component in a Suspense boundary
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

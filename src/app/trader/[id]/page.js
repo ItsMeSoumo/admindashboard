@@ -73,7 +73,7 @@ export default function TraderDetailPage({ params }) {
     if (traderId) {
       fetchTrader();
     }
-  }, [traderId]);
+  }, [traderId, fetchUsers]);
 
   // Calculate success rate percentage
   const calculateSuccessRate = () => {

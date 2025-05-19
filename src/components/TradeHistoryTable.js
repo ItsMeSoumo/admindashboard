@@ -39,7 +39,7 @@ export default function TradeHistoryTable({ entityId, entityType }) {
     if (entityId) {
       fetchTradeHistory();
     }
-  }, [entityId]);
+  }, [entityId, fetchTradeHistory]);
 
   // Format date for display
   const formatDate = (dateString) => {
