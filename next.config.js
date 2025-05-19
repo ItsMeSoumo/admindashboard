@@ -2,7 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'standalone',
+  // Use the default output mode instead of standalone
+  // output: 'standalone',
   distDir: '.next',
   // Ensure routes manifest is generated correctly
   experimental: {
@@ -13,6 +14,10 @@ const nextConfig = {
   // Add any environment variables you need here
   env: {
     // Add your environment variables here if needed
+  },
+  // This ensures that Next.js generates the routes-manifest.json file
+  generateBuildId: async () => {
+    return 'my-build-id'
   },
 }
 
