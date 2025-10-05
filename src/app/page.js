@@ -4,6 +4,9 @@ import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useAuthContext } from "../firebaseConfig/providers/AuthProvider";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig/firebaseConfig";
 
 // Import component files
 import UsersComponent from "../components/UsersComponent";
@@ -19,6 +22,7 @@ import TradeHistoryComponent from "../components/TradeHistoryComponent";
 function HomeContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuthContext();
   const [activeTab, setActiveTab] = useState('dashboard');
   
   // Check for tab query parameter on initial load
@@ -518,6 +522,26 @@ function HomeContent() {
     router.push(`/trader/${trader._id}`);
   };
 
+  // Logout current user
+  const logoutUser = async () => {
+    try {
+      await signOut(auth);
+      router.replace('/sign-in');
+    } catch (e) {
+      console.error('Logout failed:', e);
+      showNotification('error', 'Failed to logout');
+    }
+  };
+
+  // While auth is loading or redirecting, show a minimal loading state
+  if (authLoading || (!authLoading && !user)) {
+    return (
+      <main className="min-h-screen flex items-center justify-center text-gray-500">
+        Loading...
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
@@ -610,6 +634,17 @@ function HomeContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
               </svg>
               Development
+            </button>
+
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700"></div>
+            <button
+              onClick={logoutUser}
+              className="w-full flex items-center p-3 rounded-md text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-gray-700"
+            >
+              <svg className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout
             </button>
 
           </nav>

@@ -256,12 +256,12 @@ export default function UserDetailPage({ params }) {
   const percentage = calculatePercentage();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50 py-16 px-6 sm:px-8 lg:px-12">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-10 flex items-center justify-between">
           <button 
             onClick={() => router.push('/?tab=users')} 
-            className="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-200 bg-white py-1.5 px-3 rounded-lg shadow-sm"
+            className="flex items-center text-blue-600 hover:text-blue-800 transition-colors duration-300 bg-white py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1"
           >
             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -270,11 +270,11 @@ export default function UserDetailPage({ params }) {
           </button>
         </div>
         
-        <div className="p-6 sm:p-8 bg-white rounded-xl shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-2">
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-              <h2 className="text-xl font-semibold text-gray-800 mb-5 flex items-center">
-                <svg className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="p-8 sm:p-10 bg-white rounded-2xl shadow-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-2">
+            <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <svg className="h-6 w-6 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 Account Information
@@ -347,38 +347,53 @@ export default function UserDetailPage({ params }) {
               </div>
             </div>
             
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-              <h2 className="text-xl font-semibold text-gray-800 mb-5 flex items-center">
-                <svg className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.01]">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <svg className="h-6 w-6 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Financial Summary
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-sm text-gray-500 mb-1">Initial Investment</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-blue-50 rounded-xl p-6 border border-blue-100 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                  <div className="flex items-center mb-3">
+                    <svg className="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-base font-semibold text-blue-700">Initial Investment</p>
+                  </div>
                   <div className="flex items-baseline overflow-hidden">
-                    <span className="text-xl font-bold text-gray-800 tabular-nums tracking-tight">$</span>
-                    <span className="text-xl font-bold text-gray-800 tabular-nums tracking-tight truncate">{user.money ? user.money.toFixed(2) : '0.00'}</span>
+                    <span className="text-3xl font-bold text-gray-800 tabular-nums tracking-tight">$</span>
+                    <span className="text-3xl font-bold text-gray-800 tabular-nums tracking-tight truncate">{user.money ? user.money.toFixed(2) : '0.00'}</span>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-sm text-gray-500 mb-1">Current Balance</p>
+                <div className="bg-purple-50 rounded-xl p-6 border border-purple-100 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                  <div className="flex items-center mb-3">
+                    <svg className="h-5 w-5 text-purple-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                    </svg>
+                    <p className="text-base font-semibold text-purple-700">Current Balance</p>
+                  </div>
                   <div className="flex items-baseline overflow-hidden">
-                    <span className="text-xl font-bold text-gray-800 tabular-nums tracking-tight">$</span>
-                    <span className="text-xl font-bold text-gray-800 tabular-nums tracking-tight truncate">{user.presentmoney ? user.presentmoney.toFixed(2) : '0.00'}</span>
+                    <span className="text-3xl font-bold text-gray-800 tabular-nums tracking-tight">$</span>
+                    <span className="text-3xl font-bold text-gray-800 tabular-nums tracking-tight truncate">{user.presentmoney ? user.presentmoney.toFixed(2) : '0.00'}</span>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-sm text-gray-500 mb-1">Profit/Loss</p>
+                <div className={`${percentage.isProfit ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'} rounded-xl p-6 border shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105`}>
+                  <div className="flex items-center mb-3">
+                    <svg className={`h-5 w-5 ${percentage.isProfit ? 'text-green-600' : 'text-red-600'} mr-2`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={percentage.isProfit ? "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" : "M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6"} />
+                    </svg>
+                    <p className={`text-base font-semibold ${percentage.isProfit ? 'text-green-700' : 'text-red-700'}`}>Profit/Loss</p>
+                  </div>
                   <div className="block">
-                    <div className={`text-xl font-bold tabular-nums tracking-tight ${percentage.isProfit ? 'text-green-500' : 'text-red-500'}`}>
+                    <div className={`text-3xl font-bold tabular-nums tracking-tight ${percentage.isProfit ? 'text-green-600' : 'text-red-600'}`}>
                       {percentage.isProfit ? '+$' : '-$'}{Math.abs(user.presentmoney - user.money).toFixed(2)}
                     </div>
-                    <div className={`text-sm mt-1 ${percentage.isProfit ? 'text-green-500' : 'text-red-500'} whitespace-nowrap`}>({percentage.value}%)</div>
+                    <div className={`text-base mt-1 ${percentage.isProfit ? 'text-green-600' : 'text-red-600'} whitespace-nowrap`}>({percentage.value}%)</div>
                   </div>
                 </div>
               </div>
@@ -452,14 +467,16 @@ export default function UserDetailPage({ params }) {
             )}
             
             {/* Trade History Section */}
-            <div className="mt-8 p-6 sm:p-8 bg-white rounded-xl shadow-sm">
-              <h2 className="text-xl font-semibold text-gray-800 mb-5 flex items-center">
-                <svg className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="mt-10 p-8 sm:p-10 bg-white rounded-2xl shadow-lg">
+              <h2 className="text-2xl font-bold text-gray-800 mb-8 flex items-center">
+                <svg className="h-6 w-6 mr-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 Trade History
               </h2>
-              <TradeHistoryTable entityId={userId} entityType="user" />
+              <div className="w-full overflow-hidden">
+                <TradeHistoryTable entityId={userId} entityType="user" />
+              </div>
             </div>
             
             <div className="mt-8 flex justify-between">

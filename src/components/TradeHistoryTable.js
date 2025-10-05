@@ -117,89 +117,112 @@ export default function TradeHistoryTable({ entityId, entityType }) {
   
   // Calculate total amount traded
   const totalAmount = tradeHistory.reduce((sum, trade) => sum + (trade.amount || 0), 0);
+  
+  // Calculate profit/loss percentage relative to total amount
+  const totalProfitLossPercentage = totalAmount > 0 ? ((totalProfitLoss / totalAmount) * 100).toFixed(2) : 0;
+  
+  // Calculate percentage for each trade
+  const calculatePercentage = (profitLoss, amount) => {
+    if (!amount || amount === 0) return 0;
+    return ((profitLoss / amount) * 100).toFixed(2);
+  };
 
   return (
-    <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mt-4">
-      <h3 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
+    <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 mt-6 w-full max-w-full mx-auto overflow-hidden">
+      <h3 className="text-2xl font-bold mb-8 text-gray-800 dark:text-gray-200 border-b pb-4 border-gray-200 dark:border-gray-700">
         Trade History
       </h3>
       
       {loading ? (
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
         </div>
       ) : error ? (
-        <div className="text-center py-4 text-red-500">
+        <div className="text-center py-6 text-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg">
+          <svg className="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
           {error}
         </div>
       ) : tradeHistory.length > 0 ? (
         <>
           {/* Summary stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Trades</p>
-              <p className="text-xl font-semibold">{tradeHistory.length}</p>
+          <div className="flex justify-between mb-10 px-4">
+            <div className="bg-blue-50 dark:bg-gray-800 p-6 rounded-xl shadow-md border border-blue-100 dark:border-gray-700 flex-1 mx-3 first:ml-0 last:mr-0 transform hover:scale-105 transition-transform duration-300">
+              <div className="text-center">
+                <p className="text-base font-medium text-blue-600 dark:text-blue-400">Total<br/>Trades</p>
+                <p className="text-4xl font-bold text-gray-800 dark:text-white mt-3">{tradeHistory.length}</p>
+              </div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Amount</p>
-              <p className="text-xl font-semibold">${totalAmount.toLocaleString()}</p>
+            <div className="bg-purple-50 dark:bg-gray-800 p-6 rounded-xl shadow-md border border-purple-100 dark:border-gray-700 flex-1 mx-3 transform hover:scale-105 transition-transform duration-300">
+              <div className="text-center">
+                <p className="text-base font-medium text-purple-600 dark:text-purple-400">Total<br/>Amount</p>
+                <p className="text-4xl font-bold text-gray-800 dark:text-white mt-3">${totalAmount.toLocaleString()}</p>
+              </div>
             </div>
-            <div className={`bg-gray-50 dark:bg-gray-700 p-3 rounded-lg ${totalProfitLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Profit/Loss</p>
-              <p className="text-xl font-semibold">${totalProfitLoss.toLocaleString()}</p>
+            <div className={`${totalProfitLoss >= 0 ? 'bg-green-50 border-green-100' : 'bg-red-50 border-red-100'} dark:bg-gray-800 dark:border-gray-700 p-6 rounded-xl shadow-md border flex-1 mx-3 last:mr-0 transform hover:scale-105 transition-transform duration-300`}>
+              <div className="text-center">
+                <p className={`text-base font-medium ${totalProfitLoss >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>Total<br/>Profit/Loss</p>
+                <p className={`text-4xl font-bold ${totalProfitLoss >= 0 ? 'text-green-600' : 'text-red-600'} dark:text-white mt-3`}>
+                  ${totalProfitLoss.toLocaleString()} 
+                  <span className="text-sm font-medium block mt-1">({totalProfitLoss >= 0 ? '+' : ''}{totalProfitLossPercentage}%)</span>
+                </p>
+              </div>
             </div>
           </div>
           
           {/* Trade history table */}
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
+          <div className="overflow-x-auto rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 w-full px-4">
+            <table className="w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className="bg-gray-100 dark:bg-gray-800">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
                   {entityType === 'trader' ? (
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
+                    <th className="px-6 py-4 text-center text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-1/4">User</th>
                   ) : (
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Trader</th>
+                    <th className="px-6 py-4 text-center text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-1/4">Trader</th>
                   )}
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Day</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Profit/Loss</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-center text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-1/4">Amount</th>
+                  <th className="px-6 py-4 text-center text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-1/4">Profit/Loss</th>
+                  <th className="px-6 py-4 text-center text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-1/4">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {tradeHistory.map((trade) => (
-                  <tr key={trade._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{formatDate(trade.date)}</td>
-                    {entityType === 'trader' ? (
-                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                        {trade.user?.username || 'No User'}
+              <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                {tradeHistory.map((trade) => {
+                  const percentage = calculatePercentage(trade.profitLoss, trade.amount);
+                  return (
+                    <tr key={trade._id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
+                      {entityType === 'trader' ? (
+                        <td className="px-6 py-6 text-center text-base font-medium text-gray-700 dark:text-gray-300">
+                          {trade.user?.username || 'No User'}
+                        </td>
+                      ) : (
+                        <td className="px-6 py-6 text-center text-base font-medium text-gray-700 dark:text-gray-300">
+                          {trade.trader?.name || 'Unknown Trader'}
+                        </td>
+                      )}
+                      <td className="px-6 py-6 text-center text-base font-medium text-gray-700 dark:text-gray-300">
+                        <span className="font-semibold text-lg">${trade.amount.toLocaleString()}</span>
                       </td>
-                    ) : (
-                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                        {trade.trader?.name || 'Unknown Trader'}
+                      <td className="px-6 py-6 text-center">
+                        <div className={`text-lg font-semibold ${trade.profitLoss >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {trade.profitLoss >= 0 ? '+' : ''}{trade.profitLoss.toLocaleString()}
+                          <span className="text-sm block mt-1">({trade.profitLoss >= 0 ? '+' : ''}{percentage}%)</span>
+                        </div>
                       </td>
-                    )}
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{trade.day}</td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 capitalize">{trade.tradeType}</td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${trade.amount.toLocaleString()}</td>
-                    <td className={`px-4 py-2 whitespace-nowrap text-sm ${trade.profitLoss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {trade.profitLoss >= 0 ? '+' : ''}{trade.profitLoss.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap text-sm">
-                      <button
-                        onClick={() => handleDeleteConfirmation(trade._id)}
-                        className="text-red-500 hover:text-red-700 transition-colors"
-                        title="Delete trade"
-                      >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      <td className="px-6 py-6 text-center">
+                        <button
+                          onClick={() => handleDeleteConfirmation(trade._id)}
+                          className="p-2.5 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 hover:text-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-900/20 dark:hover:bg-red-900/40"
+                          title="Delete trade"
+                        >
+                          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
